@@ -1,6 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-import yaml
 import os
 from logger import log_message
 import rb
@@ -15,10 +12,7 @@ def main():
 
     if rb.auth_lk(config):
         log_message("Авторизация прошла успешно.")
-        if rb.find_button():
-            rb.start_lesson()
-        else:
-            log_message("Кнопка для начала занятия не найдена.")
+        rb.start_lesson()
     else:
         log_message("Авторизация не пройдена. Проверьте логин/пароль.")
         print("Авторизация не пройдена. Проверьте логин/пароль.")

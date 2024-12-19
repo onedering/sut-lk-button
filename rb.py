@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import yaml
 import os
 from logger import log_message
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 CONFIG_FILE = "creds.yaml"
 session = requests.Session()
@@ -57,16 +63,56 @@ def auth_lk(config):
 
 def find_button():
     """
-    Функция для поиска кнопки "начать занятие" на странице.
+    Функция для поиска кнопки "начать занятие" через Selenium.
     """
-    log_message("find_button")
-    # TODO: Реализовать поиск кнопки
-    return False
+    log_message("Инициализация WebDriver для поиска кнопки.")
+    options = webdriver.ChromeOptions()
+    #options.add_argument("--headless")  # Уберите эту строку, если нужно видеть браузер
+    driver = webdriver.Chrome(options=options)
+
+    try:
+        driver.get("https://lk.sut.ru/")
+        log_message("Загрузка страницы авторизации.")
+
+        # Авторизация через Selenium
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "users")))
+        login_input = driver.find_element(By.NAME, "users")
+        password_input = driver.find_element(By.NAME, "parole")
+        login_input.send_keys(load_config()["LOGIN"])
+        password_input.send_keys(load_config()["PASSWORD"])
+        password_input.send_keys(Keys.RETURN)
+
+        log_message("Авторизация завершена.")
+
+        # Переход к расписанию
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.LINK_TEXT, "Расписание")))
+        schedule_link = driver.find_element(By.LINK_TEXT, "Расписание")
+        schedule_link.click()
+
+        log_message("Открыта страница расписания.")
+
+        # Поиск кнопки "Начать занятие"
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Начать занятие')]")))
+        button = driver.find_element(By.XPATH, "//button[contains(text(), 'Начать занятие')]")
+
+        log_message("Кнопка 'Начать занятие' найдена.")
+        return button
+
+    except Exception as e:
+        log_message(f"Ошибка при поиске кнопки: {str(e)}")
+        return None
+
+    finally:
+        driver.quit()
 
 def start_lesson():
     """
-    Функция для начала занятия.
+    Функция для нажатия кнопки "Начать занятие".
     """
-    log_message("start_lesson")
-    # TODO: Реализовать логику начала занятия
-    pass
+    log_message("Попытка начать занятие.")
+    button = find_button()
+    if button:
+        log_message("Нажатие кнопки 'Начать занятие'.")
+        ActionChains(button.parent).move_to_element(button).click(button).perform()
+    else:
+        log_message("Кнопка 'Начать занятие' не найдена.")
