@@ -1,10 +1,10 @@
 # sut-lk-button
-***SELENIUM Version***
+***SELENIUM Version***  
 **Установка/install**  
 клонировать:  
 git clone https://github.com/onedering/sut-lk-button  
 
-перейти в папку:  
+перейти в папку:   
 /sut-lk-button  
 
 установить зависимости:  
