@@ -73,8 +73,8 @@ def find_button():
     options.add_argument("--ignore-certificate-errors")  # Игнорировать SSL ошибки
     options.add_argument("--headless")  # Уберите эту строку, если нужно видеть браузер
     driver = webdriver.Chrome(options=options)
-    timeout=100  #общее время ожидания (в секундах)
-    refresh_interval=25 #интервал обновления страницы (в секундах)
+    timeout=600  #общее время ожидания (в секундах)
+    refresh_interval=30 #интервал обновления страницы (в секундах)
 
 
     try:
