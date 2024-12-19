@@ -30,7 +30,7 @@ def auth():
 def schedule_main():
     # Добавляем задачи в расписание
     
-    schedule.every().day.at("15:03").do(log_and_run, "1-я пара: 09:00-10:35")
+    
     schedule.every().day.at("09:00").do(log_and_run, "1-я пара: 09:00-10:35")
     schedule.every().day.at("10:45").do(log_and_run, "2-я пара: 10:45-12:20")
     schedule.every().day.at("13:00").do(log_and_run, "3-я пара: 13:00-14:35")
