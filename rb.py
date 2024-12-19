@@ -73,13 +73,13 @@ def find_button():
     options.add_argument("--ignore-certificate-errors")  # Игнорировать SSL ошибки
     options.add_argument("--headless")  # Уберите эту строку, если нужно видеть браузер
     driver = webdriver.Chrome(options=options)
-    timeout=300  #общее время ожидания (в секундах)
-    refresh_interval=30 #интервал обновления страницы (в секундах)
+    timeout=100  #общее время ожидания (в секундах)
+    refresh_interval=25 #интервал обновления страницы (в секундах)
 
 
     try:
         driver.get("https://lk.sut.ru/")
-        log_message("Загрузка страницы авторизации.")
+        #log_message("Загрузка страницы авторизации.")
 
         # Авторизация через Selenium
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "users")))
@@ -98,13 +98,13 @@ def find_button():
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.XPATH, "//div[@data-target='#collapse1']"))
         )
-        log_message("Авторизация подтверждена.")
+        #log_message("Авторизация подтверждена.")
 
         
         
         # Поиск кнопки "Начать занятие"
         start_time = time.time()
-        log_message("Начало ожидания кнопки 'Начать занятие' с обновлением страницы.")
+        #log_message("Начало ожидания кнопки 'Начать занятие' с обновлением страницы.")
 
         while time.time() - start_time < timeout:
             try:
@@ -131,11 +131,11 @@ def find_button():
                 button = WebDriverWait(driver, refresh_interval).until(
                     EC.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Начать занятие')]"))
                 )
-                log_message("Кнопка 'Начать занятие' найдена.")
+                #log_message("Кнопка 'Начать занятие' найдена 1.")
                 return button
             except TimeoutException:
                 # Обновляем страницу, если кнопка не найдена в течение refresh_interval
-                log_message("Кнопка не найдена, обновляю страницу...")
+                #log_message("Кнопка не найдена, обновляю страницу...")
                 driver.refresh()
 
         #log_message("Кнопка 'Начать занятие' не найдена в течение заданного времени.")
@@ -152,7 +152,7 @@ def start_lesson():
     """
     Функция для нажатия кнопки "Начать занятие".
     """
-    log_message("Попытка начать занятие.")
+    #log_message("Попытка начать занятие.")
     button = find_button()
     if button:
         log_message("Нажатие кнопки 'Начать занятие'.")
