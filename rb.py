@@ -21,7 +21,8 @@ def create_config():
     """
     Создает конфигурационный файл.
     """
-    log_message("Конфигурационный файл не найден. Пожалуйста, введите данные для авторизации.")
+    log_message("Создание конфигурационного файла")
+    print('Конфигурационный файл не найден. Пожалуйста, введите данные для авторизации.')
     config = {
         "LOGIN": input("Введите ваш логин: ").strip(),
         "PASSWORD": input("Введите ваш пароль: ").strip()
@@ -46,19 +47,19 @@ def auth_lk(config):
         'parole': config["PASSWORD"],
     }
     session.headers.update(headers)
-    # Инициализируем сессию
     session.get(url_lk)
-    # Отправляем запрос авторизации
     response = session.post(url_auth, data=data)
     soup = BeautifulSoup(response.text, 'lxml')
-    # Повторный заход на ЛК
-    session.get(url_lk)
-    return soup.p.text == '1'
+    if soup.p and soup.p.text == '1':
+        session.get(url_lk)
+        return True
+    return False
 
 def find_button():
     """
     Функция для поиска кнопки "начать занятие" на странице.
     """
+    log_message("find_button")
     # TODO: Реализовать поиск кнопки
     return False
 
@@ -66,29 +67,6 @@ def start_lesson():
     """
     Функция для начала занятия.
     """
+    log_message("start_lesson")
     # TODO: Реализовать логику начала занятия
     pass
-
-def main():
-    config = load_config()
-
-    if not config:
-        config = create_config()
-
-    if auth_lk(config):
-        log_message("Авторизация прошла успешно.")
-        if find_button():
-            start_lesson()
-        else:
-            log_message("Кнопка для начала занятия не найдена.")
-    else:
-        log_message("Авторизация не пройдена. Проверьте логин/пароль.")
-        retry = input("Хотите обновить данные? (да/нет): ").strip().lower()
-        if retry == "да":
-            os.remove(CONFIG_FILE)  # Удаляем старый файл конфигурации
-            main()  # Перезапускаем процесс
-        else:
-            log_message("Завершение программы.")
-
-if __name__ == "__main__":
-    main()
