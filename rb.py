@@ -71,13 +71,16 @@ def start_lesson():
     options = webdriver.ChromeOptions()
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--headless")  # Режим headless; для отладки можно убрать эту опцию
+    # Скрытие лишних сообщений в консоли
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    options.add_argument("--log-level=3")
+    
     driver = webdriver.Chrome(options=options)
     timeout = 600           # Общее время ожидания (в секундах)
     refresh_interval = 30   # Интервал обновления страницы (в секундах)
 
     try:
         driver.get("https://lk.sut.ru/")
-        # Авторизация через Selenium
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, "users"))
         )
@@ -89,7 +92,7 @@ def start_lesson():
         login_button = driver.find_element(By.ID, "logButton")
         login_button.click()
 
-        # Ожидание успешной авторизации (элемент меню "Учеба..." должен стать кликабельным)
+        # Ожидание успешной авторизации (меню "Учеба..." должно стать кликабельным)
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.XPATH, "//div[@data-target='#collapse1']"))
         )
@@ -97,35 +100,37 @@ def start_lesson():
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
-                # Открытие меню "Учеба..."
+                # Открываем меню "Учеба..."
                 study_menu = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.XPATH, "//div[@data-target='#collapse1']"))
                 )
                 study_menu.click()
-                # Ожидание раскрытия меню
+                
+                # Ждём раскрытия меню
                 WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located((By.XPATH, "//div[@id='collapse1' and contains(@class, 'show')]"))
                 )
-                # Переход к пункту "Расписание"
+                # Переходим к пункту "Расписание"
                 schedule_link = WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable((By.XPATH, "//a[@title='Расписание']"))
                 )
                 schedule_link.click()
 
                 # Поиск кнопки "Начать занятие"
-                # Ищем элемент <a> с текстом "Начать занятие", как в примере:
-                # <span id="knop970285"><a onclick="open_zan(970285,27);">Начать занятие</a></span>
                 button = WebDriverWait(driver, refresh_interval).until(
                     EC.presence_of_element_located((By.XPATH, "//a[contains(text(), 'Начать занятие')]"))
                 )
                 log_message("Кнопка 'Начать занятие' найдена, выполняется нажатие.")
+                # Логируем HTML-код найденной кнопки
+                button_html = button.get_attribute('outerHTML')
+                log_message(f"Код кнопки: {button_html}")
                 driver.execute_script("arguments[0].click();", button)
                 log_message("Нажатие кнопки 'Начать занятие' выполнено.")
-                return
+                return  # Прерываем дальнейший поиск после успешного нажатия
             except TimeoutException:
                 log_message("Кнопка не найдена, обновляю страницу...")
                 driver.refresh()
-
+        
         log_message("Кнопка 'Начать занятие' не найдена в течение заданного времени.")
     except Exception as e:
         log_message(f"Ошибка при выполнении start_lesson: {str(e)}")
