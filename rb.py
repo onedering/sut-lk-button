@@ -77,7 +77,7 @@ def start_lesson():
     
     driver = webdriver.Chrome(options=options)
     timeout = 600           # Общее время ожидания (в секундах)
-    refresh_interval = 30   # Интервал обновления страницы (в секундах)
+    refresh_interval = 120   # Интервал обновления страницы (в секундах)
 
     try:
         driver.get("https://lk.sut.ru/")
