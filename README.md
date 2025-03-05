@@ -2,7 +2,7 @@
 ***SELENIUM Version***  
 **Установка/install**  
 клонировать:  
-git clone https://github.com/onedering/sut-lk-button  
+git clone -b main --single-branch https://github.com/onedering/sut-lk-button  
 
 перейти в папку:   
 /sut-lk-button  
